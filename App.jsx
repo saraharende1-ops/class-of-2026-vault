@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
-import { createRoot } from 'react-dom/client';
 
 // 1. INITIALIZE SUPABASE
 const SUPABASE_URL = "https://waxfecdcfwrdrgnlgwtc.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_bq0cWmRcGng-GzVQwlyddQ_Pv0gs..."; // Make sure your real key is inside these quotes!
+// Make sure your complete, long anon key is placed inside these quotes!
+const SUPABASE_ANON_KEY = "sb_publishable_bq0cWmRcGng-GzVQwlyddQ_Pv0gs..."; 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -31,7 +31,7 @@ export default function App() {
   useEffect(() => {
     fetchMessages();
 
-    // Set up realtime streaming subscription
+    // Realtime subscription setup
     const channel = supabase
       .channel('schema-db-changes')
       .on(
@@ -57,7 +57,7 @@ export default function App() {
 
     const textToSend = input.trim();
 
-    // MATCHING YOUR EXACT DATABASE COLUMNS (content and is_approved)
+    // Sends database updates directly to 'content' and 'is_approved' columns
     const { error: insertError } = await supabase
       .from('messages')
       .insert([
@@ -148,7 +148,6 @@ export default function App() {
                 wordBreak: 'break-word'
               }}
             >
-              {/* Rendering msg.content instead of msg.text */}
               <p style={{ margin: 0, fontSize: '16px', lineHeight: '1.5' }}>{msg.content}</p>
               <small style={{ color: '#555', display: 'block', marginTop: '8px', textAlign: 'right' }}>
                 {msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
@@ -158,15 +157,5 @@ export default function App() {
         )}
       </div>
     </div>
-  );
-}
-
-const container = document.getElementById('root');
-if (container) {
-  const root = createRoot(container);
-  root.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
   );
 }
