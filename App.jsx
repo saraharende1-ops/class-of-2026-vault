@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client';
 
 // 1. INITIALIZE SUPABASE
 const SUPABASE_URL = "https://waxfecdcfwrdrgnlgwtc.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_bq0cWmRcGng-GzVQwlyddQ_Pv0gs..."; // Your full publishable key sits inside these quotes
+const SUPABASE_ANON_KEY = "sb_publishable_bq0cWmRcGng-GzVQwlyddQ_Pv0gs..."; // Make sure your real key is inside these quotes!
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -14,12 +14,11 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Fetch only approved/unflagged messages
+  // Fetch all messages from the table
   const fetchMessages = async () => {
     const { data, error } = await supabase
       .from('messages')
       .select('*')
-      .eq('is_approved', true) 
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -32,7 +31,7 @@ export default function App() {
   useEffect(() => {
     fetchMessages();
 
-    // Set up realtime subscription to see new messages instantly
+    // Set up realtime streaming subscription
     const channel = supabase
       .channel('schema-db-changes')
       .on(
@@ -58,19 +57,18 @@ export default function App() {
 
     const textToSend = input.trim();
 
-    // Insert message into Supabase (Auto-approved since restriction is removed)
+    // Stripped down to only insert the text column
     const { error: insertError } = await supabase
       .from('messages')
       .insert([
         { 
-          text: textToSend,
-          is_approved: true // Directly set to true so it goes live instantly
+          text: textToSend
         }
       ]);
 
     if (insertError) {
-      setError('Failed to send message. Please try again.');
-      console.error(insertError);
+      setError('Failed to send message. Check console for details.');
+      console.error('Supabase Insert Error:', insertError);
     } else {
       setInput('');
       fetchMessages();
@@ -91,7 +89,7 @@ export default function App() {
     }}>
       <h1 style={{ textAlign: 'center', color: '#a855f7' }}>🎓 Class of 2026 Vault 🎓</h1>
       <p style={{ textAlign: 'center', color: '#aaa', fontSize: '14px' }}>
-        Leave an anonymous message, memory, or confession for the class.
+        Leave a magnifique, wonderful anonymous memory or confession. 💖🌹
       </p>
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px', margin: '25px 0' }}>
@@ -99,7 +97,7 @@ export default function App() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Type an anonymous message..."
+          placeholder="Type something wonderful... 😘"
           maxLength={280}
           disabled={loading}
           style={{
@@ -126,7 +124,7 @@ export default function App() {
             opacity: loading ? 0.7 : 1
           }}
         >
-          {loading ? 'Sending...' : 'Post'}
+          {loading ? 'Sending...' : 'Post 💖'}
         </button>
       </form>
 
@@ -134,7 +132,9 @@ export default function App() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '20px' }}>
         {messages.length === 0 ? (
-          <p style={{ textAlign: 'center', color: '#666', fontStyle: 'italic' }}>No memories added yet. Be the first!</p>
+          <p style={{ textAlign: 'center', color: '#888', fontStyle: 'italic' }}>
+            No memories added yet. Be the first to leave something magnifique! 🌹✨
+          </p>
         ) : (
           messages.map((msg) => (
             <div
@@ -149,7 +149,7 @@ export default function App() {
             >
               <p style={{ margin: 0, fontSize: '16px', lineHeight: '1.5' }}>{msg.text}</p>
               <small style={{ color: '#555', display: 'block', marginTop: '8px', textAlign: 'right' }}>
-                {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
               </small>
             </div>
           ))
@@ -159,7 +159,6 @@ export default function App() {
   );
 }
 
-// 3. AUTO-MOUNT TO WEB PAGE ROOT
 const container = document.getElementById('root');
 if (container) {
   const root = createRoot(container);
