@@ -57,12 +57,13 @@ export default function App() {
 
     const textToSend = input.trim();
 
-    // Stripped down to only insert the text column
+    // MATCHING YOUR EXACT DATABASE COLUMNS (content and is_approved)
     const { error: insertError } = await supabase
       .from('messages')
       .insert([
         { 
-          text: textToSend
+          content: textToSend,
+          is_approved: true
         }
       ]);
 
@@ -89,7 +90,7 @@ export default function App() {
     }}>
       <h1 style={{ textAlign: 'center', color: '#a855f7' }}>🎓 Class of 2026 Vault 🎓</h1>
       <p style={{ textAlign: 'center', color: '#aaa', fontSize: '14px' }}>
-        Leave a magnifique, wonderful anonymous memory or confession. 💖🌹
+        Leave a magnifique, wonderful anonymous memory for the class.
       </p>
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '10px', margin: '25px 0' }}>
@@ -97,7 +98,7 @@ export default function App() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Type something wonderful... 😘"
+          placeholder="Type something wonderful..."
           maxLength={280}
           disabled={loading}
           style={{
@@ -124,7 +125,7 @@ export default function App() {
             opacity: loading ? 0.7 : 1
           }}
         >
-          {loading ? 'Sending...' : 'Post 💖'}
+          {loading ? 'Sending...' : 'Post'}
         </button>
       </form>
 
@@ -133,7 +134,7 @@ export default function App() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '20px' }}>
         {messages.length === 0 ? (
           <p style={{ textAlign: 'center', color: '#888', fontStyle: 'italic' }}>
-            No memories added yet. Be the first to leave something magnifique! 🌹✨
+            No memories added yet. Be the first to leave something magnifique! ✨
           </p>
         ) : (
           messages.map((msg) => (
@@ -147,7 +148,8 @@ export default function App() {
                 wordBreak: 'break-word'
               }}
             >
-              <p style={{ margin: 0, fontSize: '16px', lineHeight: '1.5' }}>{msg.text}</p>
+              {/* Rendering msg.content instead of msg.text */}
+              <p style={{ margin: 0, fontSize: '16px', lineHeight: '1.5' }}>{msg.content}</p>
               <small style={{ color: '#555', display: 'block', marginTop: '8px', textAlign: 'right' }}>
                 {msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
               </small>
