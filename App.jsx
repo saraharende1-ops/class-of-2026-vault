@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 // 1. INITIALIZE SUPABASE (Replace with your actual project keys)
-const SUPABASE_URL = "https://your-project-id.supabase.co";
 const SUPABASE_URL = "https://waxfecdcfwrdrgnlgwtc.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_bq0cWmRcGng-GzVQwlyddQ_Pv0gs...";
 const SUPABASE_ANON_KEY = "your_copied_publishable_key_here";
 
 // 2. SIMPLE PROFANITY FILTER LIST (Add words as needed to prevent bullying)
